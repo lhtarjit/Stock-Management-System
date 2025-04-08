@@ -45,7 +45,7 @@ export default function StockPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 py-8 px-4">
       <div className="max-w-4xl mx-auto mb-6 px-2 flex flex-col sm:flex-row items-center justify-between gap-4">
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push("/home")}
           className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-all"
         >
           <FaArrowLeft className="w-5 h-5" />
