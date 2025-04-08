@@ -22,13 +22,13 @@ app.use(
 
 app.use(express.json());
 
-app.get("/", (req, res) => res.send("🚀 Stock Management Backend is Running"));
-
 const stockRoutes = require("./routes/stockRoutes");
 const authRoutes = require("./routes/authRoutes");
 
 app.use("/api/stocks", stockRoutes);
 app.use("/api/auth", authRoutes);
+
+app.get("/", (req, res) => res.send("🚀 Stock Management Backend is Running"));
 
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
