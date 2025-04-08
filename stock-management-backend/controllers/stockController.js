@@ -135,7 +135,7 @@ exports.uploadStock = async (req, res) => {
 
     const itemsWithQR = await Promise.all(
       createdItems.map(async (item) => {
-        const itemDetailUrl = `https://localhost:3000/stocks/${item._id}`;
+        const itemDetailUrl = `${process.env.CLIENT_URL}/stocks/${item._id}`;
         const qrCodeUrl = await QRCode.toDataURL(itemDetailUrl);
 
         return StockItem.findByIdAndUpdate(
