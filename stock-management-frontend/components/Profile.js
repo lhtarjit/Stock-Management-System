@@ -14,7 +14,7 @@ export default function Profile() {
   const handleLogout = () => {
     Cookies.remove("token");
     Cookies.remove("username");
-    router.push("/auth");
+    router.push("/");
   };
 
   return (

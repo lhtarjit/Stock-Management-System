@@ -1,7 +1,8 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const API_BASE_URL = "http://localhost:5001/api/auth";
+const API_BASE_URL =
+  "https://stock-management-system-4fdp.onrender.com/api/auth";
 
 // ✅ Login API
 export const loginUser = async ({ email, password }) => {
