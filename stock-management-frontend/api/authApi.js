@@ -1,13 +1,10 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const API_BASE_URL =
-  "https://stock-management-system-4fdp.onrender.com/api/auth";
-
 export const loginUser = async ({ email, password }) => {
   try {
     const response = await axios.post(
-      `${API_BASE_URL}/login`,
+      `${process.env.NEXT_PUBLIC_AUTH_BASE_URL}/login`,
       { email, password },
       {
         withCredentials: true,
@@ -30,7 +27,7 @@ export const loginUser = async ({ email, password }) => {
 export const registerUser = async ({ name, email, password, role }) => {
   try {
     const response = await axios.post(
-      `${API_BASE_URL}/register`,
+      `${process.env.NEXT_PUBLIC_AUTH_BASE_URL}/register`,
       { name, email, password, role },
       {
         withCredentials: true,

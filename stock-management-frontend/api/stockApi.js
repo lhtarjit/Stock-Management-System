@@ -1,9 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const API_BASE_URL =
-  "https://stock-management-system-4fdp.onrender.com/api/stocks";
-
 const getAuthHeaders = () => {
   const token = Cookies.get("token");
   if (!token) throw new Error("Unauthorized: Please log in again.");
@@ -30,7 +27,7 @@ export const uploadStockFile = async (file) => {
     };
 
     const response = await axios.post(
-      `${API_BASE_URL}/upload`,
+      `${process.env.NEXT_PUBLIC_STOCK_BASE_URL}/upload`,
       formData,
       config
     );
@@ -43,13 +40,16 @@ export const uploadStockFile = async (file) => {
 };
 
 export const fetchStocks = async () => {
-  const response = await axios.get(`${API_BASE_URL}/stocks`, getAuthHeaders());
+  const response = await axios.get(
+    `${process.env.NEXT_PUBLIC_STOCK_BASE_URL}/stocks`,
+    getAuthHeaders()
+  );
   return response.data;
 };
 
 export const fetchStockById = async (id) => {
   const response = await axios.get(
-    `${API_BASE_URL}/stocks/${id}`,
+    `${process.env.NEXT_PUBLIC_STOCK_BASE_URL}/stocks/${id}`,
     getAuthHeaders()
   );
   return response.data;
@@ -57,8 +57,10 @@ export const fetchStockById = async (id) => {
 
 export const searchStock = async (query) => {
   const url = query.trim()
-    ? `${API_BASE_URL}/search?query=${encodeURIComponent(query)}`
-    : `${API_BASE_URL}/stocks`;
+    ? `${
+        process.env.NEXT_PUBLIC_STOCK_BASE_URL
+      }/search?query=${encodeURIComponent(query)}`
+    : `${process.env.NEXT_PUBLIC_STOCK_BASE_URL}/stocks`;
 
   const response = await axios.get(url, getAuthHeaders());
   return response.data;
