@@ -1,19 +1,23 @@
 import { useState } from "react";
-import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import useClickOutside from "../utils/clickOutside";
 import { FaUserCircle } from "react-icons/fa";
+import { useSelector, useDispatch } from "react-redux";
+import { logoutUser } from "../store/userSlice";
+import Cookies from "js-cookie";
 
 export default function Profile() {
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useClickOutside(() => setIsDropdownOpen(false));
+  const dispatch = useDispatch();
 
-  const username = Cookies.get("username") || "User";
+  // Get username from Redux store
+  const username = useSelector((state) => state.user.name) || "User";
 
   const handleLogout = () => {
     Cookies.remove("token");
-    Cookies.remove("username");
+    dispatch(logoutUser()); // Clear from Redux
     router.push("/");
   };
 

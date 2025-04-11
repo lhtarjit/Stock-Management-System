@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { setUser } from "../store/userSlice";
 import { toast } from "react-toastify";
 import { loginUser, registerUser } from "../api/authApi";
 import Cookies from "js-cookie";
@@ -16,6 +18,7 @@ export default function Auth() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const dispatch = useDispatch();
   const router = useRouter();
 
   // Redirect logged-in users to home
@@ -89,12 +92,16 @@ export default function Auth() {
     try {
       if (isLogin) {
         // Handle login
-        await loginUser({
+        const { token, user } = await loginUser({
           email: formData.email,
           password: formData.password,
         });
-        toast.success("Login successful!");
-        router.push("/home");
+        if (token) {
+          Cookies.set("token", token);
+          dispatch(setUser(user)); // store user data in Redux
+          toast.success("Login successful!");
+          router.push("/home");
+        }
       } else {
         // Handle registration
         await registerUser({
@@ -106,13 +113,14 @@ export default function Auth() {
 
         toast.success("Registration successful! Logging you in...");
 
-        const loginResponse = await loginUser({
+        const { token, user } = await loginUser({
           email: formData.email,
           password: formData.password,
         });
 
-        if (loginResponse.token) {
-          Cookies.set("token", loginResponse.token);
+        if (token) {
+          Cookies.set("token", token);
+          dispatch(setUser(user)); // store user data in Redux
           router.push("/home");
         } else {
           toast.error("Auto-login failed. Please log in manually.");
