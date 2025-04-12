@@ -102,6 +102,7 @@ export default function Auth() {
         });
         if (token) {
           Cookies.set("token", token);
+          localStorage.setItem("user", JSON.stringify(user));
           dispatch(setUser(user)); // store user data in Redux
           toast.success("Login successful!");
           router.push("/home");
@@ -133,6 +134,8 @@ export default function Auth() {
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      dispatch(hideLoader());
     }
   };
 

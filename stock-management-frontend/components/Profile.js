@@ -17,6 +17,7 @@ export default function Profile() {
 
   const handleLogout = () => {
     Cookies.remove("token");
+    localStorage.removeItem("user");
     dispatch(logoutUser()); // Clear from Redux
     router.push("/");
   };
