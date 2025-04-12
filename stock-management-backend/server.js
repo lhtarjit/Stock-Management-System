@@ -13,12 +13,10 @@ mongoose
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-app.use(
-  cors({
-    origin: [CLIENT_URL, "http://localhost:3000"],
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: [CLIENT_URL, "http://localhost:3000"],
+  credentials: true,
+};
 
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
