@@ -2,14 +2,19 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { fetchStockById } from "../../api/stockApi";
 import { FaArrowLeft } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { showLoader, hideLoader } from "../../store/loaderSlice";
+import Loader from "../../components/common/loader";
 
 export default function StockPage() {
   const router = useRouter();
   const { id } = router.query;
 
   const [stock, setStock] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.loader.loading);
 
   useEffect(() => {
     if (id) {
@@ -18,20 +23,25 @@ export default function StockPage() {
   }, [id]);
 
   const fetchData = async (id) => {
+    dispatch(showLoader());
+
     try {
       const data = await fetchStockById(id);
       setStock(data);
+      dispatch(hideLoader());
     } catch (err) {
       console.error(err);
       setError(err.message || "Failed to fetch item.");
     } finally {
-      setLoading(false);
+      dispatch(hideLoader());
     }
   };
 
   if (loading) {
     return (
-      <div className="text-center py-12 text-lg font-medium">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <Loader size="h-8 w-8" color="text-blue-600" />
+      </div>
     );
   }
 

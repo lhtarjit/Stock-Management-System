@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../store/userSlice";
 import { toast } from "react-toastify";
 import { loginUser, registerUser } from "../api/authApi";
 import Cookies from "js-cookie";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { showLoader, hideLoader } from "../store/loaderSlice";
+import Loader from "../components/common/loader";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -20,6 +22,7 @@ export default function Auth() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
+  const loading = useSelector((state) => state.loader.loading);
 
   // Redirect logged-in users to home
   useEffect(() => {
@@ -88,6 +91,7 @@ export default function Auth() {
       toast.error("Passwords do not match!");
       return;
     }
+    dispatch(showLoader());
 
     try {
       if (isLogin) {
@@ -124,6 +128,7 @@ export default function Auth() {
           router.push("/home");
         } else {
           toast.error("Auto-login failed. Please log in manually.");
+          dispatch(hideLoader());
         }
       }
     } catch (error) {
@@ -262,9 +267,16 @@ export default function Auth() {
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition"
+            disabled={loading}
+            className="w-full h-10 bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition"
           >
-            {isLogin ? "Login" : "Register"}
+            {loading ? (
+              <Loader size="h-3 w-3" color="text-white" />
+            ) : isLogin ? (
+              "Login"
+            ) : (
+              "Register"
+            )}
           </button>
         </form>
 

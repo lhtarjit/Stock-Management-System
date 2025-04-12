@@ -3,12 +3,17 @@ import { toast } from "react-toastify";
 import Image from "next/image";
 import { fetchStocks } from "../api/stockApi"; // Import API call
 import { useRouter } from "next/router";
+import { useDispatch, useSelector } from "react-redux";
+import { showLoader, hideLoader } from "../store/loaderSlice";
+import Loader from "./common/loader";
 
 const StockTable = ({ refreshTrigger, searchResults }) => {
   const [stocks, setStocks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const router = useRouter();
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.loader.loading);
 
   useEffect(() => {
     if (searchResults !== null) {
@@ -20,11 +25,16 @@ const StockTable = ({ refreshTrigger, searchResults }) => {
   }, [refreshTrigger, searchResults]);
 
   const loadStockData = async () => {
+    dispatch(showLoader());
+
     try {
       const data = await fetchStocks();
       setStocks(data);
+      dispatch(hideLoader());
     } catch (error) {
       toast.error(error.message || "Failed to load stock data.");
+    } finally {
+      dispatch(hideLoader());
     }
   };
 
@@ -54,11 +64,19 @@ const StockTable = ({ refreshTrigger, searchResults }) => {
             </tr>
           </thead>
           <tbody>
-            {paginatedStocks.length > 0 ? (
+            {loading ? (
+              <tr className="h-96">
+                <td colSpan="5" className="text-center align-middle">
+                  <div className="flex justify-center items-center h-full">
+                    <Loader size="h-4 w-4" color="text-blue-500" />
+                  </div>
+                </td>
+              </tr>
+            ) : paginatedStocks.length > 0 ? (
               paginatedStocks.map((stock) => (
                 <tr
                   key={stock._id}
-                  className="hover:bg-gray-50 transition"
+                  className="hover:bg-gray-50 transition cursor-pointer"
                   onClick={() => handleStockById(stock._id)}
                 >
                   <td className="border p-3">{stock.name}</td>

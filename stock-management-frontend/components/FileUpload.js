@@ -2,12 +2,17 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import parseExcel from "../utils/excelParser";
 import { uploadStockFile } from "../api/stockApi";
+import { useDispatch, useSelector } from "react-redux";
+import { showLoader, hideLoader } from "../store/loaderSlice";
+import Loader from "./common/loader";
 
 const FileUpload = () => {
   const [file, setFile] = useState(null);
   const [dragging, setDragging] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [excelData, setExcelData] = useState([]);
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.loader.loading);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -57,15 +62,19 @@ const FileUpload = () => {
       return;
     }
 
+    dispatch(showLoader());
     try {
       await uploadStockFile(file);
       toast.success("Upload Successful!");
+      dispatch(hideLoader());
       setFile(null);
       setExcelData([]);
       setIsModalOpen(false);
       window.location.reload();
     } catch (error) {
       toast.error(error.message || "Upload failed. Try again.");
+    } finally {
+      dispatch(hideLoader());
     }
   };
 
@@ -151,9 +160,18 @@ const FileUpload = () => {
 
             <button
               onClick={handleUpload}
-              className="mt-4 bg-green-500 text-white px-4 py-2 rounded-lg w-full hover:bg-green-600 transition"
+              disabled={loading}
+              className={`mt-4 px-4 py-2 rounded-lg w-full h-10 font-semibold flex items-center justify-center transition ${
+                loading
+                  ? "bg-green-400 cursor-not-allowed"
+                  : "bg-green-500 hover:bg-green-600 text-white"
+              }`}
             >
-              Upload
+              {loading ? (
+                <Loader size="h-3 w-3" color="text-white" />
+              ) : (
+                "Upload"
+              )}
             </button>
           </div>
         </div>
