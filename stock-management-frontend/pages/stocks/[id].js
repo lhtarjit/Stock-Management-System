@@ -5,6 +5,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { showLoader, hideLoader } from "../../store/loaderSlice";
 import Loader from "../../components/common/loader";
+import Image from "next/image";
 
 export default function StockPage() {
   const router = useRouter();
@@ -99,10 +100,12 @@ export default function StockPage() {
         {stock.qr_code && (
           <div className="mt-10 text-center border-t pt-6">
             <h3 className="text-xl font-semibold mb-4">QR Code</h3>
-            <img
+            <Image
               src={stock.qr_code}
               alt="QR Code"
               className="inline-block w-40 h-40 object-contain"
+              width={160}
+              height={160}
             />
           </div>
         )}

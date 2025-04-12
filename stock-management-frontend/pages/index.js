@@ -268,7 +268,11 @@ export default function Auth() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-10 bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition"
+            className={`w-full h-10  text-white p-2 rounded-lg hover:bg-blue-600 transition ${
+              loading
+                ? "bg-blue-500 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-700 text-white"
+            }`}
           >
             {loading ? (
               <Loader size="h-3 w-3" color="text-white" />

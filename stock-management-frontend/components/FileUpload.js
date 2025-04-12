@@ -163,7 +163,7 @@ const FileUpload = () => {
               disabled={loading}
               className={`mt-4 px-4 py-2 rounded-lg w-full h-10 font-semibold flex items-center justify-center transition ${
                 loading
-                  ? "bg-green-400 cursor-not-allowed"
+                  ? "bg-green-500 cursor-not-allowed"
                   : "bg-green-500 hover:bg-green-600 text-white"
               }`}
             >

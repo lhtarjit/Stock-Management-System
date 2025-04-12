@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import Image from "next/image";
-import { fetchStocks } from "../api/stockApi"; // Import API call
+import { fetchStocks } from "../api/stockApi";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import { showLoader, hideLoader } from "../store/loaderSlice";
@@ -15,6 +15,18 @@ const StockTable = ({ refreshTrigger, searchResults }) => {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.loader.loading);
 
+  const loadStockData = useCallback(async () => {
+    dispatch(showLoader());
+    try {
+      const data = await fetchStocks();
+      setStocks(data);
+    } catch (error) {
+      toast.error(error.message || "Failed to load stock data.");
+    } finally {
+      dispatch(hideLoader());
+    }
+  }, [dispatch]);
+
   useEffect(() => {
     if (searchResults !== null) {
       setStocks(searchResults);
@@ -22,21 +34,7 @@ const StockTable = ({ refreshTrigger, searchResults }) => {
     } else {
       loadStockData();
     }
-  }, [refreshTrigger, searchResults]);
-
-  const loadStockData = async () => {
-    dispatch(showLoader());
-
-    try {
-      const data = await fetchStocks();
-      setStocks(data);
-      dispatch(hideLoader());
-    } catch (error) {
-      toast.error(error.message || "Failed to load stock data.");
-    } finally {
-      dispatch(hideLoader());
-    }
-  };
+  }, [refreshTrigger, searchResults, loadStockData]);
 
   const handleStockById = (id) => {
     router.push(`/stocks/${id}`);
@@ -55,12 +53,22 @@ const StockTable = ({ refreshTrigger, searchResults }) => {
       <div className="overflow-x-auto">
         <table className="w-full border-collapse border border-gray-300 shadow-md bg-white">
           <thead className="bg-gray-100">
-            <tr className="text-left">
-              <th className="border p-3">📌 Name</th>
-              <th className="border p-3">📦 Quantity</th>
-              <th className="border p-3">💰 Price</th>
-              <th className="border p-3">📁 Category</th>
-              <th className="border p-3">🔗 QR Code</th>
+            <tr className="text-left text-sm text-gray-600">
+              <th className="bg-gray-50 shadow-smborder p-3 w-1/4 text-gray-900">
+                📌 Name
+              </th>
+              <th className="bg-blue-50 shadow-sm border p-3 w-1/6 text-blue-900">
+                📦 Quantity
+              </th>
+              <th className="bg-green-50 shadow-sm border p-3 w-1/6 text-green-900">
+                💰 Price
+              </th>
+              <th className="bg-purple-50 shadow-smborder p-3 w-1/6 text-purple-900">
+                📁 Category
+              </th>
+              <th className="bg-yellow-50 shadow-sm border p-3 w-1/6 text-yellow-900">
+                🔗 QR Code
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -76,14 +84,14 @@ const StockTable = ({ refreshTrigger, searchResults }) => {
               paginatedStocks.map((stock) => (
                 <tr
                   key={stock._id}
-                  className="hover:bg-gray-50 transition cursor-pointer"
+                  className="hover:bg-blue-100 transition cursor-pointer text-sm text-gray-800"
                   onClick={() => handleStockById(stock._id)}
                 >
-                  <td className="border p-3">{stock.name}</td>
+                  <td className="border p-3 truncate">{stock.name}</td>
                   <td className="border p-3">{stock.quantity}</td>
                   <td className="border p-3">${stock.price}</td>
-                  <td className="border p-3">{stock.category}</td>
-                  <td className="border p-3 flex items-center justify-center">
+                  <td className="border p-3 capitalize">{stock.category}</td>
+                  <td className="border p-3 flex justify-center items-center">
                     <Image
                       src={stock.qr_code}
                       alt="QR Code"
@@ -107,6 +115,7 @@ const StockTable = ({ refreshTrigger, searchResults }) => {
         </table>
       </div>
 
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-end items-center mt-4 space-x-4">
           <button
