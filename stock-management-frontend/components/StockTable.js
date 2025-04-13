@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { showLoader, hideLoader } from "../store/loaderSlice";
 import Loader from "./common/loader";
 
-const StockTable = ({ refreshTrigger, searchResults }) => {
+const StockTable = ({ refreshTrigger, searchResults, query }) => {
   const [stocks, setStocks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -44,6 +44,26 @@ const StockTable = ({ refreshTrigger, searchResults }) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedStocks = stocks.slice(startIndex, startIndex + itemsPerPage);
 
+  const highlightMatch = (text) => {
+    if (!query) return text;
+
+    const lowerText = text.toLowerCase();
+    const lowerQuery = query.toLowerCase();
+    const index = lowerText.indexOf(lowerQuery);
+
+    if (index === -1) return text;
+
+    return (
+      <>
+        {text.slice(0, index)}
+        <strong className=" text-gray-900">
+          {text.slice(index, index + query.length)}
+        </strong>
+        {highlightMatch(text.slice(index + query.length))}
+      </>
+    );
+  };
+
   return (
     <div className="container mx-auto">
       <h2 className="text-2xl font-bold mb-4 text-center">
@@ -51,47 +71,51 @@ const StockTable = ({ refreshTrigger, searchResults }) => {
       </h2>
 
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse border border-gray-300 shadow-md bg-white">
-          <thead className="bg-gray-100">
+        <table className="w-full border-collapse border border-gray-300 shadow-md bg-white table-fixed">
+          <thead>
             <tr className="text-left text-sm text-gray-600">
-              <th className="bg-gray-50 shadow-smborder p-3 w-1/4 text-gray-900">
+              <th className="bg-gray-100 shadow-sm border p-3 text-gray-900">
                 📌 Name
               </th>
-              <th className="bg-blue-50 shadow-sm border p-3 w-1/6 text-blue-900">
+              <th className="bg-blue-50 shadow-sm border p-3 text-blue-900">
                 📦 Quantity
               </th>
-              <th className="bg-green-50 shadow-sm border p-3 w-1/6 text-green-900">
+              <th className="bg-green-50 shadow-sm border p-3 text-green-900">
                 💰 Price
               </th>
-              <th className="bg-purple-50 shadow-smborder p-3 w-1/6 text-purple-900">
+              <th className="bg-purple-50 shadow-sm border p-3 text-purple-900">
                 📁 Category
               </th>
-              <th className="bg-yellow-50 shadow-sm border p-3 w-1/6 text-yellow-900">
+              <th className="bg-yellow-50 shadow-sm border p-3 text-yellow-900">
                 🔗 QR Code
               </th>
             </tr>
           </thead>
+
           <tbody>
             {loading ? (
-              <tr className="h-96">
-                <td colSpan="5" className="text-center align-middle">
-                  <div className="flex justify-center items-center h-full">
-                    <Loader size="h-4 w-4" color="text-blue-500" />
-                  </div>
+              <tr>
+                <td colSpan="5" className="text-center py-10 align-middle">
+                  <Loader size="h-4 w-4" color="text-blue-500" />
                 </td>
               </tr>
             ) : paginatedStocks.length > 0 ? (
               paginatedStocks.map((stock) => (
                 <tr
                   key={stock._id}
-                  className="hover:bg-blue-100 transition cursor-pointer text-sm text-gray-800"
+                  className="hover:bg-blue-100 h-16 transition cursor-pointer text-sm text-gray-800"
                   onClick={() => handleStockById(stock._id)}
+                  colSpan="1"
                 >
-                  <td className="border p-3 truncate">{stock.name}</td>
-                  <td className="border p-3">{stock.quantity}</td>
-                  <td className="border p-3">${stock.price}</td>
-                  <td className="border p-3 capitalize">{stock.category}</td>
-                  <td className="border p-3 flex justify-center items-center">
+                  <td className="border p-3 truncate align-middle">
+                    {highlightMatch(stock.name)}
+                  </td>
+                  <td className="border p-3 align-middle">{stock.quantity}</td>
+                  <td className="border p-3 align-middle">${stock.price}</td>
+                  <td className="border p-3 capitalize align-middle">
+                    {highlightMatch(stock.category)}
+                  </td>
+                  <td className="border p-3 align-middle flex justify-center items-center">
                     <Image
                       src={stock.qr_code}
                       alt="QR Code"
@@ -105,7 +129,7 @@ const StockTable = ({ refreshTrigger, searchResults }) => {
               <tr>
                 <td
                   colSpan="5"
-                  className="border p-4 text-center text-gray-500"
+                  className="text-center text-gray-500 py-8 align-middle"
                 >
                   No stock data available.
                 </td>

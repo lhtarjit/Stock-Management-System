@@ -9,6 +9,7 @@ import Profile from "../components/Profile";
 
 export default function Home() {
   const router = useRouter();
+  const [query, setQuery] = useState("");
   const [filteredStock, setFilteredStock] = useState(null);
 
   useEffect(() => {
@@ -27,14 +28,18 @@ export default function Home() {
           <Profile />
         </div>
         <div className="flex items-center">
-          <SearchBar onSearchResults={setFilteredStock} />
+          <SearchBar
+            onSearchResults={setFilteredStock}
+            setQuery={setQuery}
+            query={query}
+          />
         </div>
         <div className="flex items-center">
           <FileUpload />
         </div>
       </div>
       <div className="w-full max-w-5xl bg-white shadow-md rounded-lg p-6 mb-6">
-        <StockTable searchResults={filteredStock} />
+        <StockTable searchResults={filteredStock} query={query} />
       </div>
     </div>
   );

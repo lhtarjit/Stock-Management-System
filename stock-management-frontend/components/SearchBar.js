@@ -1,12 +1,11 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { toast } from "react-toastify";
 import { searchStock } from "../api/stockApi";
 import { useDispatch } from "react-redux";
 import { showLoader, hideLoader } from "../store/loaderSlice";
 import debounce from "lodash.debounce";
 
-const SearchBar = ({ onSearchResults }) => {
-  const [query, setQuery] = useState("");
+const SearchBar = ({ onSearchResults, query, setQuery }) => {
   const dispatch = useDispatch();
 
   const debouncedSearch = useMemo(() => {
