@@ -19,7 +19,7 @@ function AppContent({ Component, pageProps }) {
     if (token && userData) {
       dispatch(setUser(JSON.parse(userData)));
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <>

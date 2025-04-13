@@ -86,17 +86,20 @@ exports.uploadStock = async (req, res) => {
 
 exports.searchStock = async (req, res) => {
   try {
+    const { query } = req.query;
+
     if (!req.user?.id) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const { query } = req.query;
     if (!query?.trim()) {
       return res.status(400).json({ error: "Search query required" });
     }
 
+    const baseQuery = req.user.role === "admin" ? {} : { user: req.user.id };
+
     const results = await StockItem.find({
-      user: req.user.id,
+      ...baseQuery,
       $or: [
         { name: { $regex: query, $options: "i" } },
         { category: { $regex: query, $options: "i" } },
@@ -138,31 +141,26 @@ exports.getStock = async (req, res) => {
 
 exports.getStockById = async (req, res) => {
   try {
+    const stockId = req.params.id;
+
     if (!req.user?.id) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const { query } = req.query;
-    if (!query?.trim()) {
-      return res.status(400).json({ error: "Search query required" });
+    const query =
+      req.user.role === "admin"
+        ? { _id: stockId }
+        : { _id: stockId, user: req.user.id };
+
+    const item = await StockItem.findOne(query);
+
+    if (!item) {
+      return res.status(404).json({ error: "Item not found" });
     }
 
-    const baseQuery = req.user.role === "admin" ? {} : { user: req.user.id };
-
-    const results = await StockItem.find({
-      ...baseQuery,
-      $or: [
-        { name: { $regex: query, $options: "i" } },
-        { category: { $regex: query, $options: "i" } },
-      ],
-    }).select("-__v");
-
-    res.status(200).json(results);
+    res.status(200).json(item);
   } catch (error) {
-    console.error("Search error:", error);
-    res.status(500).json({
-      error: "Search failed",
-      details: error.message,
-    });
+    console.error("getStockById error:", error);
+    res.status(500).json({ error: "Failed to fetch item" });
   }
 };

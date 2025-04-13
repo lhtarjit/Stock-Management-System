@@ -48,10 +48,14 @@ export const fetchStocks = async () => {
 };
 
 export const fetchStockById = async (id) => {
+  const token = Cookies.get("token");
+  if (!token) throw new Error("Unauthorized");
+
   const response = await axios.get(
     `${process.env.NEXT_PUBLIC_STOCK_BASE_URL}/stocks/${id}`,
     getAuthHeaders()
   );
+
   return response.data;
 };
 
