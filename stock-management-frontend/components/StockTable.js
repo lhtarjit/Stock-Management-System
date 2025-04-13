@@ -71,7 +71,7 @@ const StockTable = ({ refreshTrigger, searchResults, query }) => {
       </h2>
 
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse border border-gray-300 shadow-md bg-white table-fixed">
+        <table className="min-w-[600px] w-full border-collapse border border-gray-300 shadow-md bg-white table-fixed">
           <thead>
             <tr className="text-left text-sm text-gray-600">
               <th className="bg-gray-100 shadow-sm border p-3 text-gray-900">
@@ -115,13 +115,15 @@ const StockTable = ({ refreshTrigger, searchResults, query }) => {
                   <td className="border p-3 capitalize align-middle">
                     {highlightMatch(stock.category)}
                   </td>
-                  <td className="border p-3 align-middle flex justify-center items-center">
-                    <Image
-                      src={stock.qr_code}
-                      alt="QR Code"
-                      width={48}
-                      height={48}
-                    />
+                  <td className="border p-3 align-middle">
+                    <div className="flex justify-center items-center">
+                      <Image
+                        src={stock.qr_code}
+                        alt="QR Code"
+                        width={48}
+                        height={48}
+                      />
+                    </div>
                   </td>
                 </tr>
               ))
