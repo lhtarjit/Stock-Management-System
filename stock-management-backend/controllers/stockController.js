@@ -119,7 +119,7 @@ exports.searchStock = async (req, res) => {
 exports.getStock = async (req, res) => {
   try {
     if (!req.user?.id) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({ error: "Unauthorized." });
     }
 
     const query = req.user.role === "admin" ? {} : { user: req.user.id };
