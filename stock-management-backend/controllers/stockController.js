@@ -164,3 +164,56 @@ exports.getStockById = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch item" });
   }
 };
+
+// PATCH /api/stocks/:id
+exports.updateStockById = async (req, res) => {
+  try {
+    const { name, quantity, price, category } = req.body;
+
+    const updatedStock = await StockItem.findByIdAndUpdate(
+      req.params.id,
+      { name, quantity, price, category },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedStock) {
+      return res.status(404).json({ error: "Stock not found" });
+    }
+
+    res.status(200).json({
+      message: "Stock updated successfully",
+      data: updatedStock,
+    });
+  } catch (error) {
+    console.error("Update error:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to update stock", details: error.message });
+  }
+};
+
+exports.deleteStock = async (req, res) => {
+  try {
+    const user = req.user;
+
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ error: "Access denied. Admins only." });
+    }
+
+    const stockId = req.params.id;
+
+    const stock = await StockItem.findById(stockId);
+    if (!stock) {
+      return res.status(404).json({ error: "Stock item not found." });
+    }
+
+    await StockItem.findByIdAndDelete(stockId);
+
+    await User.updateMany({ stocks: stockId }, { $pull: { stocks: stockId } });
+
+    res.status(200).json({ message: "Item deleted successfully." });
+  } catch (error) {
+    console.error("Delete error:", error.message);
+    res.status(500).json({ error: "Failed to delete stock item." });
+  }
+};

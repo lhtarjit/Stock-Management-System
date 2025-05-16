@@ -69,3 +69,33 @@ export const searchStock = async (query) => {
   const response = await axios.get(url, getAuthHeaders());
   return response.data;
 };
+
+export const updateStockById = async (id, updatedData) => {
+  const res = await axios.patch(
+    `${process.env.NEXT_PUBLIC_STOCK_BASE_URL}/stocks/${id}`,
+    updatedData,
+    {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    }
+  );
+
+  return res.data;
+};
+
+export const deleteStockById = async (id) => {
+  const token = Cookies.get("token");
+  if (!token) throw new Error("Unauthorized");
+
+  const response = await axios.delete(
+    `${process.env.NEXT_PUBLIC_STOCK_BASE_URL}/stocks/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};
